@@ -957,22 +957,26 @@ var CLIENT_KEY = 'aurailia_portal_louisecargo';
 var DEFAULT_TODO = {
   mine: [
     { section: 'Your next steps', badge: 'This week', items: [
-      'Approve the logos I sent via Voxer',
-      'Write the About Me draft this weekend (midlife journey, mission, why this work \u2014 raw is fine)',
-      'Test Claude with the Identity Compass PDF + sample report this weekend',
-      'Add your own images / video to the Canva mood board once I share it',
-      'Begin drafting the assessment call protocol in Claude'
+      'Build the $7 quiz artifact in Claude \u2014 deep phase insight, practices (breathwork + phase EFT), a short personal video or audio, then the booking invitation',
+      'Record your 4 short phase meditations (I\u2019ll write the scripts), upload them to Dropbox, and we\u2019ll embed the links in the artifact',
+      'Finalise the Identity Blueprint intake form in Claude, folding the Enneagram-style questions straight in so there\u2019s no third-party site',
+      'Add your own images and video to the shared brand board, clear the ones you don\u2019t want, and pick a few accent symbols for between sections',
+      'Reframe social your way: one platform, short honest video, all batched on a single day',
+      'Join my Skool community via the link I sent on Telegram'
     ]}
   ],
   aurailia: [
     { section: 'On now', badge: 'In progress', items: [
-      'Align the landing page wireframe colours to your finalised brand kit palette',
-      'Build the hidden landing page inside your Wix site, PR homepage untouched'
+      'Build your homepage on Wix \u2014 the wireframe, your confirmed brand kit, and your About Me (short on home, fuller on the About page)',
+      'Update the brand board to your confirmed palette: clay, warm brown, dark olive, with plum as the accent',
+      'Build the reusable assessment-call artifact template in Claude (intake summary, 7-day practices, booking links)',
+      'Build the Canva mood board in your palette and send you the link'
     ]},
     { section: 'Coming next', badge: '', items: [
-      'Draft the assessment call page copy in your voice for your review',
-      'Set up The Becoming Roadmap ($7) micro-offer flow: audio series plus the interactive quiz',
-      'Send through the website pricing options (build, finesse/redesign, audit, including the Chaos Cashflow discount)'
+      'Build the Phase Quiz artifact with phase-specific audio routing',
+      'Build the Identity Blueprint ($111\u2013$222) artifact template: intake, personalised report, then a 1:1 call booking tab',
+      'Send you a screenshot of the Business Alignment Blueprint as a reference, plus the artifact HTML so we can mirror the tab structure',
+      'Keep building the Embody Wealth Skool community and share the growth and classroom strategies with you'
     ]}
   ]
 };
@@ -1023,6 +1027,27 @@ function load(key, fallback) {
 function save(key, val) {
   try { localStorage.setItem(CLIENT_KEY + '_' + key, JSON.stringify(val)); } catch(e) {}
 }
+
+/* ── SEED_VERSION ──────────────────────────────────────────────
+   Bump this string whenever Aurailia updates the to-do, checks,
+   or progress in this file. On a version change, the portal clears
+   that saved state so the new content from the file shows, then
+   stamps the new version. Anything the client changes after that
+   persists normally until the next bump. */
+var SEED_VERSION = '2026-06-18-todo-sync';
+(function syncSeedVersion() {
+  try {
+    var k = CLIENT_KEY + '_seedver';
+    var stored = localStorage.getItem(k);
+    if (stored !== SEED_VERSION) {
+      localStorage.removeItem(CLIENT_KEY + '_todo');
+      localStorage.removeItem(CLIENT_KEY + '_checks');
+      localStorage.removeItem(CLIENT_KEY + '_status');
+      localStorage.setItem(k, SEED_VERSION);
+    }
+  } catch(e) {}
+})();
+
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg || 'Saved ✦';
@@ -1116,13 +1141,7 @@ function toggleStep(card) { card.classList.toggle('open'); }
 
 var todoData = load('todo', null) || JSON.parse(JSON.stringify(DEFAULT_TODO));
 // Items already completed, seeded so they show done on a fresh load. Louise's own toggles always win once she has saved state.
-var DEFAULT_CHECKS = {
-  'mine|0|Approve the logos I sent via Voxer': true,
-  'mine|0|Write the About Me draft this weekend (midlife journey, mission, why this work \u2014 raw is fine)': true,
-  'mine|0|Test Claude with the Identity Compass PDF + sample report this weekend': true
-};
-var checks = load('checks', null);
-if (checks === null) { checks = DEFAULT_CHECKS; save('checks', checks); }
+var checks = load('checks', {});
 var editing = false;
 
 function persistTodo() { save('todo', todoData); }
